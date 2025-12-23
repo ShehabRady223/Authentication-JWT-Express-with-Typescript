@@ -10,7 +10,7 @@ export const TOO_MANY_REQUESTS = 429;
 export const INTERNAL_SERVER_ERROR = 500;
 
 export type HttpStatusCode =
-    | typeof OK
+    typeof OK
     | typeof CREATED
     | typeof BAD_REQUEST
     | typeof UNAUTHORIZED

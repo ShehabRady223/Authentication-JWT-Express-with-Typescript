@@ -5,19 +5,23 @@ import { APP_ORGIN, PORT } from "./constants/env.js";
 import cors from "cors"
 import cookieParser from "cookie-parser";
 import errorHandler from "./middleware/errorHandler.js";
+import authRoute from './routes/auth.route.js';
 
 const app = express();
 
 //Middilewares
 app.use(express.json())
 app.use(cors({
-    origin:APP_ORGIN,
-    credentials:true
+    origin: APP_ORGIN,
+    credentials: true
 }))
 app.use(cookieParser())
 
 //Routers
-// app.get('/')
+// app.get("/",(req,res)=>{
+//     res.status(200).json({message:"Code working"})
+// })
+app.use("/auth", authRoute)
 
 //Error Exapction
 app.use(errorHandler)
