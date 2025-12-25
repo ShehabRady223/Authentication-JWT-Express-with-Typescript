@@ -7,7 +7,8 @@ export interface UserDocument extends mongoose.Document {
     verified: boolean,
     createAt: Date,
     updateAt: Date,
-    comparePassword(val: string): Promise<boolean>
+    comparePassword(val: string): Promise<boolean>,
+    omitPassword(): Pick<UserDocument, "_id" | "email" | "verified" | "createAt" | "updateAt">
 }
 
 const userSchema = new mongoose.Schema<UserDocument>({
@@ -19,16 +20,22 @@ const userSchema = new mongoose.Schema<UserDocument>({
         timestamps: true
     })
 
-userSchema.pre('save', async function() {
-    if(!this.isModified("password")){
-        return 
+userSchema.pre('save', async function () {
+    if (!this.isModified("password")) {
+        return
     }
-    this.password = await hashValue(this.password,8);
+    this.password = await hashValue(this.password, 8);
 })
 
-userSchema.methods.comparePassword=async function (val:string) {
-    return compareValue(val,this.password)
+userSchema.methods.omitPassword = function () {
+    const user = this.toObject();
+    delete user.password;
+    return user;
 }
 
-const UserModel = mongoose.model<UserDocument>("User",userSchema)
+userSchema.methods.comparePassword = async function (val: string) {
+    return compareValue(val, this.password)
+}
+
+const UserModel = mongoose.model<UserDocument>("User", userSchema)
 export default UserModel
