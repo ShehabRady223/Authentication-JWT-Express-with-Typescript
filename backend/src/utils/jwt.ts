@@ -1,12 +1,11 @@
 import jwt from "jsonwebtoken";
-import Audience from "../constants/audience.js";
+import permissions from "../constants/permissions.js";
 import { JWT_REFRESH_SECRET, JWT_SECRET } from "../constants/env.js";
 import type { VerifyOptions, SignOptions } from "jsonwebtoken"
 import type { SessionDocument } from "../models/session.model.js";
 import type { UserDocument } from './../models/user.model.js';
 
 export type RefreshTokenPayload = {
-    // sessionId: SessionDocument["_id"];
     sessionId: SessionDocument["_id"];
 };
 
@@ -20,11 +19,11 @@ type SignOptionsAndSecret = SignOptions & {
 };
 
 const signDefaults: SignOptions = {
-    audience: Audience.User,
+    audience: permissions.User,
 };
 
 const verifyDefaults: VerifyOptions = {
-    audience: Audience.User,
+    audience: permissions.User,
 };
 
 const accessTokenSignOptions: SignOptionsAndSecret = {
@@ -40,27 +39,17 @@ export const refreshTokenSignOptions: SignOptionsAndSecret = {
 export const signToken =
     (payload: AccessTokenPayload | RefreshTokenPayload, options?: SignOptionsAndSecret) => {
         const { secret, ...signOpts } = options || accessTokenSignOptions;
-        return jwt.sign(payload, secret, {
-            ...signDefaults,
-            ...signOpts,
-        });
+        return jwt.sign(payload, secret, {...signDefaults,...signOpts,});
     };
 
 export const verifyToken = <TPayload extends object = AccessTokenPayload>
     (token: string, options?: VerifyOptions & { secret?: string; }) => {
     const { secret = JWT_SECRET, ...verifyOpts } = options || {};
     try {
-        const raw = jwt.verify(token, secret, {
-            ...verifyDefaults,
-            ...verifyOpts,
-        });
-        const payload = raw as unknown as TPayload;
-        return {
-            payload,
-        };
+        const payload = jwt.verify(token, secret, { ...verifyDefaults, ...verifyOpts, }) as TPayload;
+        return { payload };
+        //? why is error should be of any type ?
     } catch (error: any) {
-        return {
-            error: error.message,
-        };
+        return { error: error.message };
     }
 };
