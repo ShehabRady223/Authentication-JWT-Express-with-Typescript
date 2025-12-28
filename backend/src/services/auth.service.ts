@@ -4,7 +4,7 @@ import UserModel from "../models/user.model.js"
 import verificationCodeModel from "../models/verificationCode.model.js"
 import { ONE_DAY_MS, oneYearFromNow, thirtyDaysFromNow } from "../utils/date.js"
 import appAssert from "../utils/appAssert.js"
-import { CONFLICT, UNAUTHORIZED } from "../constants/http.js"
+import { CONFLICT, INTERNAL_SERVER_ERROR, NOT_FOUND, UNAUTHORIZED } from "../constants/http.js"
 import { signToken, verifyToken, type RefreshTokenPayload } from "../utils/jwt.js"
 import { refreshTokenSignOptions } from './../utils/jwt.js';
 
@@ -88,3 +88,22 @@ export const refreshUserAccessToken = async (refreshToken: string) => {
     const accessToken = signToken({ userId: session.userId, sessionId: session._id });
     return { accessToken, newRefreshToken, };
 };
+
+export const verifyEmail = async (code: string) => {
+    // get the verfication code 
+    const validCode = await verificationCodeModel.findOne({
+        _id: code,
+        type: VerificationCodeTypes.EmailVerification
+    })
+    appAssert(validCode, NOT_FOUND, "Invalid or expired verification code");
+    //update user to verified true
+    const updateUser = await UserModel.findByIdAndUpdate(validCode.userId, {
+        isVerified: true
+    }
+        , { new: true })
+    appAssert(updateUser, INTERNAL_SERVER_ERROR, "Falid to verify Email");
+    //delete the verification code
+    await validCode.deleteOne();
+    //return user
+    return { user: updateUser.omitPassword() }
+}

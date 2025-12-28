@@ -4,17 +4,17 @@ import { compareValue, hashValue } from "../utils/bcrypt.js"
 export interface UserDocument extends mongoose.Document {
     email: string,
     password: string,
-    verified: boolean,
+    isVerified: boolean,
     createAt: Date,
     updateAt: Date,
     comparePassword(val: string): Promise<boolean>,
-    omitPassword(): Pick<UserDocument, "_id" | "email" | "verified" | "createAt" | "updateAt">
+    omitPassword(): Pick<UserDocument, "_id" | "email" | "isVerified" | "createAt" | "updateAt">
 }
 
 const userSchema = new mongoose.Schema<UserDocument>({
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
-    verified: { type: Boolean, default: false }
+    isVerified: { type: Boolean, default: false }
 },
     {
         timestamps: true
