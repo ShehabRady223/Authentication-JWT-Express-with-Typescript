@@ -8,6 +8,7 @@ import errorHandler from "./middleware/errorHandler.js";
 import authRoute from './routes/auth.route.js';
 import userRoute from "./routes/user.route.js";
 import authenticate from "./middleware/authenticate.js";
+import sessionRoute from "./routes/session.route.js";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(cookieParser())
 // })
 app.use("/auth", authRoute)
 app.use("/user", authenticate, userRoute)
+app.use("/session", authenticate, sessionRoute)
 
 //Error Exapction
 app.use(errorHandler)
