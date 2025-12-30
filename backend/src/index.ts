@@ -6,6 +6,8 @@ import cors from "cors"
 import cookieParser from "cookie-parser";
 import errorHandler from "./middleware/errorHandler.js";
 import authRoute from './routes/auth.route.js';
+import userRoute from "./routes/user.route.js";
+import authenticate from "./middleware/authenticate.js";
 
 const app = express();
 
@@ -22,6 +24,7 @@ app.use(cookieParser())
 //     res.status(200).json({message:"Code working"})
 // })
 app.use("/auth", authRoute)
+app.use("/user", authenticate, userRoute)
 
 //Error Exapction
 app.use(errorHandler)
