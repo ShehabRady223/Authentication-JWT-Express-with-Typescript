@@ -1,9 +1,9 @@
 import catchError from "../utils/catchErrors.js";
-import { createAccount, loginUser, refreshUserAccessToken, sendPasswordResetEmail, verifyEmail } from "../services/auth.service.js";
+import { createAccount, loginUser, refreshUserAccessToken, resetPassword, sendPasswordResetEmail, verifyEmail } from "../services/auth.service.js";
 import { CREATED, OK, UNAUTHORIZED } from "../constants/http.js";
 import type { Response } from "express";
 import { clearAuthCookies, getRefreshTokenCookieOptions, setAuthCookies } from "../utils/cookies.js";
-import { registerSchema, loginSchema, verificationCodeSchema, emailSchema } from "./auth.Schemas.js";
+import { registerSchema, loginSchema, verificationCodeSchema, emailSchema, resetPasswordSchema } from "./auth.Schemas.js";
 import { verifyToken } from "../utils/jwt.js";
 import sessionModel from "../models/session.model.js";
 import appAssert from "../utils/appAssert.js";
@@ -69,4 +69,10 @@ export const sendPasswordController = catchError(async (req, res) => {
     const email = emailSchema.parse(req.body.email);
     await sendPasswordResetEmail(email);
     return res.status(OK).json({ message: "Password reset email sent" });
+})
+
+export const resetPasswordController = catchError(async (req, res) => {
+    const { password, verificationCode } = resetPasswordSchema.parse(req.body)
+    await resetPassword({ password, verificationCode })
+    return clearAuthCookies(res).status(OK).json({ message: "Password reset successful" });
 })
