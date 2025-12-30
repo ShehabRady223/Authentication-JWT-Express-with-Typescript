@@ -4,6 +4,7 @@ import {
     logoutController,
     refreshController,
     registerController,
+    sendPasswordController,
     verifyEmailController
 } from './../controllers/auth.controller.js';
 
@@ -14,5 +15,6 @@ authRoute.post("/login", loginController)
 authRoute.get("/refresh", refreshController)
 authRoute.get("/logout", logoutController)
 authRoute.get("/email/:code", verifyEmailController)
+authRoute.post("/password/forgot", sendPasswordController)
 
 export default authRoute
