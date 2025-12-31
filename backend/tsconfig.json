@@ -1,6 +1,7 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
+    "typeRoots": ["./types", "./node_modules/@types"],
     // File Layout
     "rootDir": "./src",
     "outDir": "./dist",
@@ -43,6 +44,6 @@
     // "noEmit": true,
     // "allowImportingTsExtensions": true,
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*","types"],
+  "exclude": ["node_modules", "src/types/*.d.ts"]
 }
